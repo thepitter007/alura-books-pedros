@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AluraBooks</title>
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>AluraBooks</h1>
+            <button id="loginToggle" class="btn-entrar">Entrar</button>
+        </div>
+    </header>
+
+    <main>
+        <section id="livros" class="livros">
+            <h2>Livros de Teste</h2>
+            <div id="livrosTestesContainer">
+                <div class="livro" data-titulo="Título do Livro 1" data-descricao="Descrição do livro 1. Aprenda sobre...">
+                    <h3>Título do Livro 1</h3>
+                    <p>Descrição breve do livro 1. Aprenda sobre...</p>
+                    <div class="livro-buttons">
+                        <button class="comprarBtn">Comprar</button>
+                        <button class="detalhesBtn">Detalhes</button>
+                    </div>
+                </div>
+                <div class="livro" data-titulo="Título do Livro 2" data-descricao="Descrição do livro 2. Explore o mundo de...">
+                    <h3>Título do Livro 2</h3>
+                    <p>Descrição breve do livro 2. Explore o mundo de...</p>
+                    <div class="livro-buttons">
+                        <button class="comprarBtn">Comprar</button>
+                        <button class="detalhesBtn">Detalhes</button>
+                    </div>
+                </div>
+                <!-- Adicione mais livros de teste conforme necessário -->
+            </div>
+        </section>
+
+        <section id="todosLivros" class="livros" style="display: none;">
+            <h2>Todos os Livros Disponíveis</h2>
+            <div id="livrosContainer"></div>
+        </section>
+
+        <!-- Modal de Login -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Login</h2>
+                <form id="modalLoginForm">
+                    <input type="text" placeholder="Usuário" required>
+                    <input type="password" placeholder="Senha" required>
+                    <button type="submit" class="btn">Entrar</button>
+                    <p>Não tem uma conta? <button id="registerBtn" type="button" class="btn">Cadastre-se</button></p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal de Cadastro -->
+        <div id="cadastroModal" class="modal">
+            <div class="modal-content">
+                <span class="closeCadastro">&times;</span>
+                <h2>Cadastro</h2>
+                <form id="modalCadastroForm">
+                    <input type="text" placeholder="Nome" required>
+                    <input type="text" placeholder="Usuário" required>
+                    <input type="email" placeholder="E-mail" required>
+                    <input type="password" placeholder="Senha" required>
+                    <button type="submit" class="btn">Cadastrar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal de Compra -->
+        <div id="compraModal" class="modal">
+            <div class="modal-content">
+                <span class="closeCompra">&times;</span>
+                <h2>Resumo da Compra</h2>
+                <p>Título do Livro: <span id="livroTitulo"></span></p>
+                <form id="modalCompraForm">
+                    <input type="text" placeholder="Nome Completo" required>
+                    <input type="email" placeholder="E-mail" required>
+                    <input type="text" placeholder="Endereço de Entrega" required>
+                    <input type="text" placeholder="Forma de Pagamento" required>
+                    <input type="text" placeholder="Número do Cartão" required>
+                    <button type="submit" class="btn">Finalizar Compra</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal de Detalhes do Livro -->
+        <div id="detalhesModal" class="modal">
+            <div class="modal-content">
+                <span class="closeDetalhes">&times;</span>
+                <h2 id="detalhesTitulo"></h2>
+                <p id="detalhesDescricao"></p>
+                <button id="fecharDetalhes" class="btn">Fechar</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container rodapé">
+            <p>&copy; 2024 AluraBooks. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        let usuarios = []; // Array para armazenar usuários
+        let usuarioLogado = null; // Variável para armazenar o usuário logado
+
+        // Exibir o modal de login
+        document.getElementById("loginToggle").addEventListener("click", function() {
+            document.getElementById("loginModal").style.display = "block";
+        });
+
+        // Funções para fechar modais
+        document.querySelectorAll('.close').forEach(elem => {
+            elem.onclick = function() {
+                this.parentElement.parentElement.style.display = 'none';
+            }
+        });
+
+        // Fechar modal ao clicar fora
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+            }
+        };
+
+        // Login
+        document.getElementById("modalLoginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const usuario = document.querySelector('input[placeholder="Usuário"]').value;
+            const senha = document.querySelector('input[placeholder="Senha"]').value;
+
+            const usuarioEncontrado = usuarios.find(u => u.usuario === usuario && u.senha === senha);
+            
+            if (usuarioEncontrado) {
+                usuarioLogado = usuarioEncontrado;
+                alert("Login realizado com sucesso!");
+                document.getElementById("loginModal").style.display = "none";
+                // Exibir todos os livros após o login
+                document.getElementById("todosLivros").style.display = "block";
+                // Adicione código para carregar os livros disponíveis aqui
+            } else {
+                alert("Usuário ou senha incorretos.");
+            }
+        });
+
+        // Cadastro
+        document.getElementById("modalCadastroForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const nome = document.querySelector('input[placeholder="Nome"]').value;
+            const usuario = document.querySelector('input[placeholder="Usuário"]').value;
+            const email = document.querySelector('input[placeholder="E-mail"]').value;
+            const senha = document.querySelector('input[placeholder="Senha"]').value;
+
+            usuarios.push({ nome, usuario, email, senha });
+            alert("Cadastro realizado com sucesso! Agora você pode fazer login.");
+            document.getElementById("cadastroModal").style.display = "none";
+            document.getElementById("loginModal").style.display = "block";
+        });
+
+        // Visualizar detalhes do livro
+        document.querySelectorAll('.detalhesBtn').forEach(button => {
+            button.addEventListener('click', function() {
+                const livroTitulo = this.parentElement.parentElement.getAttribute('data-titulo');
+                const livroDescricao = this.parentElement.parentElement.getAttribute('data-descricao');
+
+                document.getElementById('detalhesTitulo').innerText = livroTitulo;
+                document.getElementById('detalhesDescricao').innerText = livroDescricao;
+                document.getElementById('detalhesModal').style.display = 'block';
+            });
+        });
+
+        // Comprar livro
+        document.querySelectorAll(".comprarBtn").forEach(button => {
+            button.addEventListener("click", function() {
+                if (!usuarioLogado) {
+                    alert("Você precisa estar logado para realizar a compra.");
+                    document.getElementById("loginModal").style.display = "block";
+                    return;
+                }
+
+                const tituloLivro = this.previousElementSibling.textContent;
+                document.getElementById("livroTitulo").textContent = tituloLivro;
+                document.getElementById("compraModal").style.display = "block";
+            });
+        });
+
+        // Finalizar compra
+        document.getElementById("modalCompraForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            alert("Compra finalizada com sucesso!");
+            document.getElementById("compraModal").style.display = "none";
+        });
+
+        // Trocar para cadastro
+        document.getElementById("registerBtn").addEventListener("click", function() {
+            document.getElementById("loginModal").style.display = "none";
+            document.getElementById("cadastroModal").style.display = "block";
+        });
+    </script>
+</body>
+</html>
